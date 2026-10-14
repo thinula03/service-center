@@ -11,6 +11,10 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): Response|RedirectResponse
     {
+        if ($request->user()->is_system_admin) {
+            return to_route('admin.dashboard');
+        }
+
         $organization = $request->user()->organizations()->withCount('branches')->first();
 
         if (! $organization) {

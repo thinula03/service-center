@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreBranchRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return (bool) $this->user()?->is_system_admin;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:120'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:32'],
+            'address_line_1' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'timezone' => ['required', 'timezone'],
+        ];
+    }
+}

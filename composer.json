@@ -1,11 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "infinity-ai/service-center",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A multi-organization service-center operations, marketplace, and public service discovery platform.",
     "keywords": [
         "laravel",
-        "framework"
+        "inertia",
+        "react",
+        "service-center",
+        "multi-tenant"
     ],
     "license": "MIT",
     "require": {

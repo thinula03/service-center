@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Building2, Gauge, LayoutGrid, Users, Wrench } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -22,25 +22,37 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Organization',
+        href: '/organization/setup',
+        icon: Building2,
+    },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+    const navItems = auth.user.is_system_admin
+        ? [
+              { title: 'Overview', href: '/admin', icon: Gauge },
+              {
+                  title: 'Organizations',
+                  href: '/admin/organizations',
+                  icon: Building2,
+              },
+              { title: 'Users', href: '/admin/users', icon: Users },
+              {
+                  title: 'Service catalogue',
+                  href: '/admin/services',
+                  icon: Wrench,
+              },
+          ]
+        : mainNavItems;
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar collapsible="icon" variant="inset" className="border-none">
+            <SidebarHeader className="border-b border-sidebar-border px-3 py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
@@ -52,11 +64,18 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
-                <NavMain items={mainNavItems} />
+            <SidebarContent className="px-2 py-5">
+                <NavMain
+                    items={navItems}
+                    label={
+                        auth.user.is_system_admin
+                            ? 'Platform management'
+                            : 'Service center'
+                    }
+                />
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-sidebar-border p-3">
                 <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
