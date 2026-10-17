@@ -2,10 +2,10 @@ import { Head } from '@inertiajs/react';
 import {
     ArrowRight,
     Building2,
+    CarFront,
     ClipboardList,
     Package,
     ShoppingBag,
-    Users,
     Wrench,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +28,12 @@ type Props = {
 
 const modules = [
     {
+        title: 'Customers & vehicles',
+        description: 'Customer records and registered vehicles',
+        icon: CarFront,
+        status: 'Available',
+    },
+    {
         title: 'Service jobs',
         description: 'Estimates, work orders, and job progress',
         icon: Wrench,
@@ -43,12 +49,6 @@ const modules = [
         title: 'Marketplace',
         description: 'Public product and item listings',
         icon: ShoppingBag,
-        status: 'Planned',
-    },
-    {
-        title: 'Team',
-        description: 'Employees, roles, and branch assignments',
-        icon: Users,
         status: 'Planned',
     },
 ];
@@ -114,7 +114,7 @@ export default function Dashboard({ organization }: Props) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground">
-                            Job management is the next milestone
+                            Requests and estimates are the next milestone
                         </CardContent>
                     </Card>
                 </div>

@@ -4,7 +4,7 @@ Service Center is a multi-organization platform for service businesses, initiall
 
 The application is being developed as a modular Laravel monolith using a domain-based, layered architecture. Laravel owns routing, authentication, authorization, validation, persistence, queues, and server-side workflows. React is delivered through Inertia.js, avoiding a separate API for the main web application while retaining a modern single-page experience.
 
-> Development status: foundation, system administration, organization/branch administration, and the platform service catalogue are implemented. Operational and public modules are planned. See [PROJECT_PROGRESS.md](docs/PROJECT_PROGRESS.md) for the complete status matrix.
+> Development status: foundation, system administration, organization/branch administration, the platform service catalogue, organization service offerings, the customer/vehicle registry, and initial service-request intake are implemented. Estimates, work orders, stock operations, and public modules remain planned. See [PROJECT_PROGRESS.md](docs/PROJECT_PROGRESS.md) for the complete status matrix.
 
 ## Product vision
 
@@ -44,6 +44,12 @@ Customer discovery
 - Audited administrator actions.
 - Standardized service categories and service definitions.
 - Quotation or direct-booking intake modes and vehicle-required rules.
+- Organization service offerings with branch availability, organization descriptions, fixed/starting/hourly/quotation pricing, duration, lead time, activation, and publication readiness.
+- Organization-scoped individual and business customer records with contact details, addresses, notes, status, and searchable directory.
+- Canonical vehicle profiles and customer vehicle records covering make/model, generation, trim, engine code, structural segment, powertrain/fuel, brake configuration, electronic parking brake, suspension, mileage, and identifiers.
+- High-voltage safety warnings for HEV, PHEV, and BEV profiles.
+- Inventory taxonomy persistence for hierarchical functional categories, OEM/OES/economy/consumable tiers, universal or vehicle-specific fitment, alternate part numbers, core charges, hazmat flags, and disposal fees. Stock operations and inventory UI are not yet built.
+- Organization service-request intake linking a customer, owned vehicle, available branch, and active service offering, with searchable queue, controlled quotation/booking mode, and vehicle safety snapshots.
 - Responsive professional operations interface with a navy/teal visual system, role-aware navigation, polished Shadcn/Radix components, and light, dark, and system appearance modes.
 
 ## Technology stack
@@ -85,6 +91,8 @@ Customer discovery
 app/
 ├── Domains/
 │   ├── Administration/
+│   ├── Customers/
+│   ├── Inventory/
 │   ├── Organizations/
 │   └── Services/
 ├── Http/
@@ -100,6 +108,7 @@ resources/js/
 ├── pages/
 │   ├── admin/
 │   ├── auth/
+│   ├── organization/
 │   ├── organizations/
 │   └── settings/
 └── types/
@@ -332,7 +341,7 @@ npm audit --omit=dev
 
 ## Testing
 
-The current suite covers authentication, profile/security settings, organization onboarding, tenant access boundaries, administrator authorization, organization and branch management, default-branch protection, audit logging, and service-catalogue management.
+The current suite covers authentication, profile/security settings, organization onboarding, tenant access boundaries, administrator authorization, organization and branch management, default-branch protection, audit logging, service-catalogue management, organization service offerings, customer/vehicle isolation, inventory-taxonomy relationships, and safety-aware service-request intake.
 
 Run it with:
 
@@ -340,7 +349,7 @@ Run it with:
 php artisan test
 ```
 
-At the time this document was updated, the complete suite contained 57 passing tests and 194 assertions. Treat that count as a snapshot; the authoritative result is always the current test run.
+At the time this document was updated, the complete suite contained 74 passing tests and 261 assertions. Treat that count as a snapshot; the authoritative result is always the current test run.
 
 ## Production preparation
 

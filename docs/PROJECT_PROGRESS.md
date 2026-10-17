@@ -1,6 +1,6 @@
 # Service Center Platform Progress
 
-Last updated: 14 October 2026
+Last updated: 17 October 2026
 
 This document tracks the entire intended platform—not only the current development phase. It distinguishes working software from partial foundations, plans, and unresolved requirements.
 
@@ -22,11 +22,11 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 | Technical foundation                | Implemented         | Laravel/Inertia/React/Shadcn application, database, authentication, builds, tests, and domain structure are operational.                                                      |
 | System administration               | Partial             | Dashboard, access boundary, organizations, users, branches, statuses, and service taxonomy exist. Administrator creation UI, full logs, settings, and support tooling remain. |
 | Organizations and branches          | Partial             | Onboarding, membership foundation, branches, default branch, service hours, contact data, and admin oversight exist. Tenant self-management and invitation workflows remain.  |
-| Service catalogue                   | Partial             | Platform taxonomy is implemented. Organization offerings, pricing, duration, availability, and public publication remain.                                                     |
-| Customers and vehicles              | Not implemented     | Planned after organization offerings.                                                                                                                                         |
-| Quotations, bookings, and estimates | Not implemented     | No intake or approval workflow exists.                                                                                                                                        |
+| Service catalogue                   | Partial             | Platform taxonomy and initial organization offerings are implemented. Tax, capacity, media, compatibility, moderation, and public discovery remain.                           |
+| Customers and vehicles              | Partial             | Detailed canonical profiles, asset records, safety classification, search, normalization, and isolation exist. Editing, history, files, and workflow enforcement remain.      |
+| Quotations, bookings, and estimates | Partial             | Safety-aware organization intake and searchable request queue exist. Request lifecycle, calendar, inspection, estimates, and approval remain.                                 |
 | Service jobs/work orders            | Not implemented     | No operational job workflow exists.                                                                                                                                           |
-| Inventory                           | Not implemented     | No catalogue, branch stock, or movements exist.                                                                                                                               |
+| Inventory                           | Partial             | Taxonomy, item compliance metadata, alternate numbers, and vehicle-profile fitment persistence exist. No inventory UI, branch stock, or movements exist.                      |
 | Procurement                         | Not implemented     | No supplier or purchasing workflow exists.                                                                                                                                    |
 | Accounting and payments             | Not implemented     | No estimates, invoices, payments, expenses, or reports exist.                                                                                                                 |
 | HRM                                 | Not implemented     | No employee, attendance, leave, or payroll workflows exist.                                                                                                                   |
@@ -236,6 +236,19 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 - Edit workflow
 - Administrator audit records
 - Initial confirmed example: Vehicle Care / Cut and Polish
+- Organization opt-in to standardized services
+- Organization-specific customer-facing description
+- Branch availability assignment
+- Fixed, starting-from, hourly, or quotation-only pricing
+- LKR currency storage
+- Estimated duration
+- Minimum lead time
+- Organization-level quotation/direct-booking choice
+- Active/inactive offering lifecycle
+- Publication-readiness status
+- Owner/administrator authorization
+- Cross-organization offering and branch isolation
+- Offering list, creation, edit, and removal screens
 
 ### Partial
 
@@ -245,16 +258,11 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 
 ### Not implemented
 
-- Organization opt-in to standardized services
-- Organization-specific description
-- Branch availability
-- Fixed, starting-from, hourly, or quotation-only pricing
-- Estimated duration
 - Tax behavior
 - Staff/skill requirements
 - Service add-ons and packages
 - Vehicle make/model/type compatibility
-- Booking capacity and lead time
+- Booking capacity and slot scheduling
 - Public publication and search indexing
 - Service images
 - Service approval/moderation
@@ -263,36 +271,57 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 
 ### Implemented
 
-- Nothing beyond the shared user-account foundation.
+- Customer records independent of login accounts
+- Individual and business customer types
+- Organization-scoped customer contact details, address, notes, and active status
+- Searchable customer directory by name, business, email, phone, or vehicle registration
+- Case-normalized email duplicate prevention inside an organization
+- Customer-to-vehicle ownership relationship and multiple vehicles per customer
+- Normalized organization-unique vehicle registration numbers
+- Vehicle make, model, generation/series, year, variant/trim, engine code, structural segment, powertrain/fuel, transmission, color, mileage, VIN/chassis, engine number, notes, and status
+- Canonical vehicle profiles linked to customer vehicle assets
+- Brake configuration, electronic parking brake, and suspension classification
+- High-voltage warning for HEV, PHEV, and BEV vehicles
+- Owner/administrator authorization and cross-organization query isolation
+- Customer creation/detail and vehicle registration screens
+- Automated coverage for creation, duplicate rules, normalization, staff denial, search, and tenant isolation
+
+### Partial
+
+- Customer address is stored directly on the customer record; reusable/multiple address records are not modeled.
+- Notes exist, but structured contact preferences, consent history, and privacy controls do not.
+- Vehicle ownership is current-state only; ownership transfer/history is not modeled.
+- Safety metadata is stored and high-voltage risk is displayed, but bay/lift matching, inspection switching, and EV-certified technician assignment cannot be enforced until those modules exist.
 
 ### Not implemented
 
-- Customer records independent of login accounts
 - Customer registration and profile
 - Customer contact preferences
-- Customer addresses
-- Individual/business customer types
-- Vehicle registration number
-- Make, model, variant, year, fuel type, transmission, and mileage
-- VIN/chassis/engine numbers
 - Vehicle images and documents
 - Vehicle ownership history
-- Customer-to-vehicle relationship
-- Multiple vehicles per customer
 - Service history
-- Customer notes and consent
+- Customer/vehicle editing and archival screens
 - Duplicate detection and merge
 
 ## 7. Enquiries, quotations, bookings, and estimates
 
 ### Implemented
 
-- Service definitions can declare quotation or direct-booking mode only.
+- Service definitions declare quotation or direct-booking mode.
+- Organization-scoped service requests with generated request numbers and new status
+- Required links to an existing customer, that customer's vehicle, active branch, and active organization offering
+- Branch/offering availability enforcement
+- Offering-controlled quotation or booking intake type
+- Preferred date/time, customer concern, and internal notes
+- Safety snapshots for high voltage, electronic parking-brake retraction, and air-suspension lockout
+- Searchable intake queue by request number, customer identity, or vehicle registration
+- Owner/administrator authorization and tenant-scoped validation
+- Automated coverage for successful safety-aware intake, customer/vehicle ownership, branch availability, and staff denial
 
 ### Not implemented
 
-- Public/private service enquiry
-- Quotation request
+- Public self-service enquiry
+- Request detail screen and controlled status transitions/history
 - Booking calendar and slots
 - Branch capacity
 - Appointment rescheduling/cancellation
@@ -354,12 +383,21 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 
 ### Implemented
 
-- No inventory domain exists.
+- Inventory domain persistence foundation
+- Hierarchical functional-system category tree
+- OEM, OES/premium aftermarket, economy aftermarket, and consumable/shop-supply tiers
+- Universal and vehicle-specific fitment types
+- Hard many-to-many fitment relation between vehicle-specific items and canonical vehicle profiles
+- Primary and alternate/interchange part numbers
+- Core-charge amount and flag
+- Hazmat and disposal-fee rules/amounts
+- Organization-scoped SKU uniqueness
+- Automated model/relationship coverage for taxonomy, cross-brand fitment, alternate numbers, and disposal metadata
 
 ### Not implemented
 
-- Item/part master
-- Categories, brands, units, SKUs, and barcodes
+- Item/part management screens and API workflows
+- Units and barcodes
 - Branch stock balances
 - Stock receipts, issues, transfers, returns, and adjustments
 - Batch/serial tracking where required
@@ -371,6 +409,9 @@ For the exact current development handoff and code entry points, read [HANDOFF.m
 - Supplier links
 - Inventory valuation and movement reports
 - Import/export
+- Server enforcement that vehicle-specific parts always have at least one profile fitment
+- Automated alternative-part recommendation when stock is unavailable
+- Automatic core-charge/disposal-fee application and core-return reconciliation on estimates/invoices
 
 ## 10. Procurement and suppliers
 
@@ -665,6 +706,9 @@ The local development database currently contains demonstration data used to ver
 - Colombo Main Branch
 - Vehicle Care service category
 - Cut and Polish service definition
+- Published Demo Service Center offering for Cut and Polish with branch availability and starting price
+- Nimal Perera customer record
+- Toyota Prius vehicle registered as CAA1234
 
 The repeatable demo seeder and credentials are documented in the README. This is local demonstration data, not a production seed contract. The seeder refuses to run in production; production administrator and organization creation must follow controlled operational procedures.
 
@@ -672,20 +716,21 @@ The repeatable demo seeder and credentials are documented in the README. This is
 
 At the time of this update:
 
-- 57 automated tests pass
-- 194 assertions pass
+- 74 automated tests pass
+- 261 assertions pass
 - PHP formatting passes
 - TypeScript checking passes
 - Frontend formatting/lint checking passes
 - Production frontend build passes
 - Production dependency audit reports zero vulnerabilities
-- Registration, organization onboarding, administrator dashboard, organization/branch management, service hours, user oversight, and service-catalogue screens have been visually inspected on localhost
+- Registration, organization onboarding, administrator dashboard, organization/branch management, service hours, user oversight, service catalogue, organization service offerings, customer/vehicle screens, service-request queue/intake form, and request safety warning have been visually inspected on localhost
+- PHPStan currently reports 56 project-wide typing findings when run with sufficient memory; static analysis is not yet clean
 
 These are current local-development results, not proof of production deployment or live integration behavior.
 
 ## 24. Recommended next milestones
 
-### Milestone 1 — Organization service offerings
+### Milestone 1 — Organization service offerings — initial implementation complete
 
 - Select standardized services
 - Branch availability
@@ -695,20 +740,26 @@ These are current local-development results, not proof of production deployment 
 - Publication readiness
 - Tests and authorization
 
-### Milestone 2 — Customers and vehicles
+Remaining offering work includes tax behavior, booking capacity/slots, staff requirements, packages/add-ons, compatibility, media, public indexing, and moderation.
+
+### Milestone 2 — Customers and vehicles — initial implementation complete
 
 - Customer records
 - Vehicle ownership and specifications
 - Search and duplicate prevention
 - Organization-scoped history
 
-### Milestone 3 — Requests, bookings, and estimates
+The core identity registry is usable and now holds the mechanical/structural classifications required by later operations. Remaining work includes editing, merge tooling, documents/images, ownership history, consent/contact preferences, service history, bay compatibility, safety checklist switching, and technician-certification enforcement.
+
+### Milestone 3 — Requests, bookings, and estimates — intake foundation complete
 
 - Intake form
 - Inspection
 - Estimate items/totals
 - Customer approval
 - Conversion to work order
+
+The organization-side intake queue is usable. Next add request detail and controlled status transitions, inspection records/checklists, estimate versioning and line items, customer approval evidence, and booking-capacity rules.
 
 ### Milestone 4 — Work orders
 
@@ -750,6 +801,55 @@ These are current local-development results, not proof of production deployment 
 12. What subscription/plans model applies to organizations?
 
 ## 26. Development change log
+
+### 17 October 2026 — Safety-aware service-request intake
+
+- Added organization-scoped service requests linking an existing customer, that customer's vehicle, an active branch, and an active organization service offering.
+- Added generated request numbers, new status, quotation/booking intake type, preferred time, customer concern, and internal notes.
+- Added server-side enforcement for customer/vehicle ownership, branch/offering availability, organization boundaries, active records, role authorization, and the offering's allowed intake mode.
+- Snapshotted high-voltage, electronic parking-brake retraction, and air-suspension lockout requirements from the vehicle at intake.
+- Added a searchable request queue and a guided organization intake form with dependent customer/vehicle and service/branch selection plus high-voltage warnings.
+- Added four feature tests and verified 74 tests with 261 assertions.
+- Verified PHP formatting, frontend formatting/lint, TypeScript checking, the production frontend build, database migration, request creation, and live request-queue presentation.
+- Kept request detail/history, inspections, estimate calculations/versioning, approval evidence, booking capacity, and work-order conversion explicitly marked as not implemented.
+
+### 17 October 2026 — Vehicle-profile and parts-taxonomy foundations
+
+- Replaced flat vehicle-only classification with reusable canonical vehicle profiles linked to customer vehicle assets.
+- Added generation/series, trim, engine code, structural segment, ICE/HEV/PHEV/BEV/alternative powertrain, detailed fuel type, brake configuration, electronic parking brake, and suspension metadata.
+- Added visible high-voltage safety warnings for HEV, PHEV, and BEV records and documented the later server-enforced EV-technician, bay, and inspection rules.
+- Added inventory functional-category trees, sourcing tiers, universal/vehicle-specific fitment, vehicle-profile fitment mappings, primary/alternate part numbers, core-charge metadata, and hazmat/disposal-fee metadata.
+- Updated the demo Prius to an XW50 HEV profile with engine, brake, EPB, and suspension details.
+- Added inventory taxonomy/fitment coverage and expanded vehicle tests; verified 70 tests with 249 assertions.
+- Verified PHP formatting, frontend formatting/lint, TypeScript checking, the production frontend build, database migration, repeatable demo seeding, and the expanded vehicle UI on localhost.
+- Kept stock operations, technician certification, bay allocation, inspection switching, estimate fee calculation, core returns, and substitution recommendations explicitly marked as not implemented.
+
+### 17 October 2026 — Customer and vehicle foundation
+
+- Added organization-owned customer and vehicle tables with indexes, foreign keys, status fields, and organization-level duplicate constraints.
+- Added individual/business customer records, customer display names, contact/address/notes fields, and customer-to-vehicle relationships.
+- Added normalized registration and identifier handling plus core vehicle specifications and mileage.
+- Added an owner/administrator customer directory with search by identity, contact, and vehicle registration; customer creation; customer detail; and vehicle registration.
+- Enforced active-organization access, role authorization, scoped record loading, and cross-organization isolation.
+- Added Nimal Perera and Toyota Prius CAA1234 to the repeatable local demonstration dataset.
+- Added seven feature tests covering customer creation, case-insensitive email duplicates, vehicle creation and registration normalization, duplicate registration, staff denial, tenant isolation, and vehicle-registration search.
+- Verified 69 tests with 243 assertions, PHP formatting, frontend formatting/lint, TypeScript checking, and the production frontend build.
+- Visually inspected the customer directory, customer detail, vehicle form, and registered-vehicle presentation on localhost.
+- Reviewed and synchronized the README, architecture, handoff, and progress documentation; PHPStan's existing 56 project-wide findings remain documented technical debt.
+
+### 17 October 2026 — Organization service offerings
+
+- Added organization service-offering and branch-availability persistence with tenant-scoped relationships.
+- Added pricing and booking-mode domain enums plus a transactional offering save action.
+- Added owner/administrator screens to select platform services and configure organization descriptions, fixed/starting/hourly/quotation pricing, LKR amounts, duration, lead time, branch availability, activation, and publication readiness.
+- Added editing and removal of organization offerings and role-aware Services navigation.
+- Enforced active-organization access, owner/administrator permissions, and cross-organization offering/branch isolation.
+- Added a repeatable Cut and Polish demo offering.
+- Updated the organization dashboard to identify Customers & Vehicles as the next milestone.
+- Added five feature tests covering creation, tenant-scoped display, cross-organization branch rejection, staff denial, and cross-organization offering denial.
+- Verified 62 tests with 217 assertions, PHP formatting, frontend formatting/lint, TypeScript checking, and the production frontend build.
+- Visually inspected the owner service-offering list and editor on localhost.
+- Static analysis completes with a 512 MB allowance but currently reports 56 project-wide typing findings; this remains technical debt and is not reported as passing.
 
 ### 14 October 2026 — Professional interface redesign
 

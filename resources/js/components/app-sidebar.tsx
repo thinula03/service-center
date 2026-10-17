@@ -1,5 +1,14 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Building2, Gauge, LayoutGrid, Users, Wrench } from 'lucide-react';
+import {
+    Building2,
+    Gauge,
+    LayoutGrid,
+    ListChecks,
+    ContactRound,
+    ClipboardPlus,
+    Users,
+    Wrench,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -26,6 +35,21 @@ const mainNavItems: NavItem[] = [
         title: 'Organization',
         href: '/organization/setup',
         icon: Building2,
+    },
+    {
+        title: 'Services',
+        href: '/organization/services',
+        icon: ListChecks,
+    },
+    {
+        title: 'Customers',
+        href: '/organization/customers',
+        icon: ContactRound,
+    },
+    {
+        title: 'Requests',
+        href: '/organization/requests',
+        icon: ClipboardPlus,
     },
 ];
 

@@ -2,7 +2,10 @@
 
 namespace App\Domains\Organizations\Infrastructure\Models;
 
+use App\Domains\Customers\Infrastructure\Models\Customer;
 use App\Domains\Organizations\Domain\Enums\OrganizationStatus;
+use App\Domains\ServiceRequests\Infrastructure\Models\ServiceRequest;
+use App\Domains\Services\Infrastructure\Models\OrganizationServiceOffering;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -27,5 +30,20 @@ class Organization extends Model
         return $this->belongsToMany(User::class)
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function serviceOfferings(): HasMany
+    {
+        return $this->hasMany(OrganizationServiceOffering::class);
+    }
+
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function serviceRequests(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class);
     }
 }

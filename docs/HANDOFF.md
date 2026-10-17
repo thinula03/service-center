@@ -1,6 +1,6 @@
 # Service Center Platform — Development Handoff
 
-Last updated: 14 October 2026
+Last updated: 17 October 2026
 
 ## 1. Purpose of this document
 
@@ -16,11 +16,11 @@ Read this together with:
 
 Service Center is a multi-organization operations and public-discovery platform, initially for vehicle service centers. The completed product is intended to connect platform administrators, service-center owners and staff, customers, and commercial partners. It will cover organizations and branches, standardized and organization-specific services, customers and vehicles, quotation/booking intake, estimates, service work orders, inventory, procurement, invoicing/payments, HRM, marketplace listings, leasing commissions, public discovery, reviews, customer profiles, notifications, reporting, and audit/support tools.
 
-Only the foundation, initial system-administration area, organization/branch management, and platform service catalogue are currently implemented. Do not infer that the remaining target modules exist.
+Only the foundation, initial system-administration area, organization/branch management, platform service catalogue, organization service offerings, and initial customer/vehicle registry are currently implemented. Do not infer that the remaining target modules exist.
 
 ## 3. Current stopping point
 
-The project is at the end of the initial platform-administration foundation.
+The project has completed the initial platform-administration foundation, organization service offerings, customer/vehicle registry, and the first safety-aware service-request intake workflow.
 
 Working now:
 
@@ -34,10 +34,22 @@ Working now:
 - Platform user search and status management.
 - Administrator activity recording.
 - Platform service categories and standardized services.
+- Organization opt-in to platform services.
+- Organization-specific service descriptions, four pricing modes, duration, lead time, and customer-intake mode.
+- Branch-level service availability, active status, and publication readiness.
+- Owner/administrator authorization and cross-organization isolation for service offerings.
+- Organization-scoped individual and business customers with contact/address data, notes, status, and search by identity, contact, or vehicle registration.
+- Canonical vehicle profiles plus customer-owned vehicle records with normalized unique registrations, generation/series, trim, engine code, structural segment, powertrain/fuel, brake and suspension metadata, mileage, identifiers, and detail/creation screens.
+- Visible high-voltage safety warnings for HEV/PHEV/BEV records; later work-order assignment must enforce EV-certified technicians rather than relying on the warning alone.
+- Inventory taxonomy persistence for hierarchical functional categories, sourcing tiers, universal/vehicle-specific fitment, vehicle-profile mappings, alternate/interchange part numbers, core charges, hazmat flags, and disposal fees.
+- Owner/administrator authorization and cross-organization isolation for customer and vehicle creation and viewing.
+- Organization service-request creation and searchable intake queue linking an existing customer, that customer's vehicle, an active offered service, and an available branch.
+- Offering-controlled quotation/direct-booking intake and server-side rejection of customer/vehicle mismatches or unavailable branch/service combinations.
+- Immutable-at-intake safety snapshots for high voltage, electronic parking-brake retraction, and air-suspension lockout requirements.
 - Organization onboarding with owner membership and a default branch.
 - A cohesive responsive interface across the public entry page, authentication shell, system-administrator workspace, organization dashboard, navigation, cards, forms, and data screens.
 
-The next recommended feature is **organization service offerings**: allow an organization to select platform services and configure branch availability, price, duration, intake mode, and publication readiness. This should be completed before customers, bookings, and work orders depend on those offerings.
+The next recommended feature is **request detail, inspection, and estimates**. Add controlled request status transitions and an inspection record, then build versioned estimate headers/items and customer approval before any work-order conversion. The current intake is deliberately a queue and creation workflow, not a booking calendar or estimate system.
 
 ## 4. Identity and access model
 
@@ -90,7 +102,10 @@ Current backend domains:
 
 - `Administration` — platform access, overview, user/organization control, audit records.
 - `Organizations` — organizations, memberships, branches, status, and service hours.
-- `Services` — global service categories and standardized service definitions.
+- `Services` — global service categories, standardized service definitions, and organization service offerings.
+- `Customers` — organization-scoped customers, vehicle assets, canonical vehicle profiles, safety classification, normalization, and creation actions.
+- `Inventory` — parts taxonomy and compliance/fitment persistence foundation; no stock workflow or UI yet.
+- `ServiceRequests` — organization-scoped intake records, safety snapshots, and request creation action.
 
 The frontend uses React through Inertia, Tailwind CSS, and source-owned Shadcn-style components built on Radix UI. Internal application flows are server-routed; a separate REST API is not currently required.
 
@@ -112,6 +127,14 @@ The current visual direction is a restrained professional operations system: dee
 - `app/Domains/Administration/` — activity action/model.
 - `app/Domains/Organizations/` — organization action, enums, and models.
 - `app/Domains/Services/` — service catalogue models.
+- `app/Domains/Customers/` — customer and vehicle models plus creation actions.
+- `app/Domains/Inventory/` — category, item, alternate part-number, compliance, and vehicle-profile fitment models.
+- `app/Domains/ServiceRequests/` — service-request model and transactional creation action.
+- `app/Http/Controllers/Organization/ServiceOfferingController.php` — tenant-scoped offering queries and HTTP workflow.
+- `app/Http/Controllers/Organization/CustomerController.php` — tenant-scoped directory, customer detail, and customer/vehicle creation.
+- `resources/js/pages/organization/services/` — owner-facing offering list, creation, and editing screens.
+- `resources/js/pages/organization/customers/` — searchable directory, customer creation, detail, and vehicle registration screens.
+- `resources/js/pages/organization/requests/` — searchable request queue and safety-aware intake form.
 - `app/Models/User.php` — identity, platform flag, status, and organization relationship.
 - `database/migrations/` — authoritative schema history.
 - `database/seeders/DemoEnvironmentSeeder.php` — repeatable local data and separated accounts.
@@ -129,6 +152,7 @@ The current visual direction is a restrained professional operations system: dee
 
 - `tests/Feature/Admin/` — system-admin and catalogue behavior.
 - `tests/Feature/Organizations/` — onboarding and organization behavior.
+- `tests/Feature/Organization/` — organization offering and customer/vehicle behavior.
 - `tests/Feature/DemoEnvironmentSeederTest.php` — account separation and repeatable seeding.
 
 ## 8. Fresh local setup
@@ -164,14 +188,16 @@ npm audit --omit=dev
 
 Last verified locally:
 
-- 57 tests passed.
-- 194 assertions passed.
+- 74 tests passed.
+- 261 assertions passed.
 - PHP formatting passed.
 - Frontend formatting/lint passed.
 - TypeScript checking passed.
 - Production frontend build passed with Node 22.
 - Production dependency audit previously reported zero vulnerabilities.
 - The public entry page, platform administrator dashboard, and organization owner dashboard were visually inspected in the local browser after the interface redesign.
+- The organization service-offering list/editor, customer/vehicle screens, and service-request queue/intake/safety presentation were visually inspected on localhost.
+- PHPStan completes with a larger memory allowance but currently reports 56 project-wide typing findings; static analysis is configured but not yet clean.
 
 This is local evidence, not proof of production deployment or live external integrations.
 
@@ -185,9 +211,14 @@ Implemented tables cover:
 - Administrator activity logs.
 - Platform service categories.
 - Platform service definitions.
+- Organization service offerings and branch availability assignments.
+- Customers and vehicles with enforced organization ownership.
+- Canonical vehicle profiles.
+- Inventory category, item, part-number, and vehicle-profile fitment foundations.
+- Service requests linking organization, branch, customer, vehicle, and organization service offering.
 - Framework sessions, cache, queues, and passkeys.
 
-The demo dataset contains Demo Service Center, Colombo Main Branch, Vehicle Care, and Cut and Polish. No customer, vehicle, offering, booking, work-order, stock, invoice, marketplace, review, or HR data model exists yet.
+The demo dataset contains Demo Service Center, Colombo Main Branch, Vehicle Care, Cut and Polish, a published Demo Service Center offering, customer Nimal Perera, and a Toyota Prius XW50 HEV profile registered as CAA1234. Inventory taxonomy tables exist, but no demo inventory items or usable stock workflow exists. No booking, estimate, work-order, invoice, marketplace, review, or HR data model exists yet.
 
 ## 11. Rules for the next implementation
 
@@ -205,8 +236,11 @@ The demo dataset contains Demo Service Center, Colombo Main Branch, Vehicle Care
 
 - Organization staff invitation and fine-grained permissions are not built.
 - The organization-facing operational dashboard is still a foundation, not a complete management portal.
-- No organization-specific service offerings/pricing exist.
-- No customer, vehicle, request, estimate, booking, work-order, inventory, accounting, procurement, HRM, marketplace, review, or notification workflow exists.
+- Customer and vehicle creation/search exist, but editing, merging, files, ownership changes, consent management, and service history are not built.
+- High-voltage classification and warning exist, but EV certification, bay/lift capability, digital-inspection switching, and technician-assignment enforcement await the work-order/HR modules.
+- Inventory taxonomy persistence exists, but item-management screens, branch balances, movements, reservations, purchasing, invoice calculations, automated disposal fees, core-return settlement, and substitution recommendations are not built.
+- Request creation and queueing exist, but request detail/status transitions, inspection, estimates, booking calendar/capacity, rescheduling, and customer approval do not.
+- No work-order, operational inventory, accounting, procurement, HRM, marketplace, review, or notification workflow exists.
 - Production hosting and external providers are not configured.
 - “Jobs,” “Carrier/Carier,” marketplace checkout depth, leasing commission rules, accounting depth, payroll scope, review policy, subscriptions, and notification channels still require stakeholder confirmation.
 

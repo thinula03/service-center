@@ -190,17 +190,60 @@ Implemented responsibilities:
 - Booking/quotation intake mode
 - Vehicle-required rule
 - Activation status
+- Organization-specific service offerings
+- Fixed, starting-from, hourly, or quotation pricing
+- Organization description, duration, lead time, and customer-intake mode
+- Branch availability
+- Active and publication-ready lifecycle
+
+### Customers
+
+Implemented responsibilities:
+
+- Organization-scoped individual and business customer records
+- Contact details, a current address, internal notes, and active status
+- Customer directory search, including linked vehicle registrations
+- Current customer-to-vehicle ownership
+- Registration normalization and organization-level duplicate prevention
+- Core vehicle identity, specifications, mileage, and notes
+- Canonical make/model/generation/year/trim and engine-code profiles
+- Structural segment, powertrain/fuel, brake/EPB, and suspension classifications
+- High-voltage classification for HEV, PHEV, and BEV profiles
+
+Editing, merge tooling, reusable addresses, consent history, vehicle files, ownership history, and service history remain future responsibilities.
+
+### Inventory
+
+Implemented foundation responsibilities:
+
+- Hierarchical functional-system categories
+- OEM, OES/premium aftermarket, economy aftermarket, and consumable/shop-supply tiers
+- Universal or vehicle-specific fitment classification
+- Hard many-to-many fitment mapping from an item to canonical vehicle profiles
+- Primary and alternate/interchange part numbers
+- Core-charge, hazmat, and disposal-fee metadata
+
+Item-management screens, branch stock, quantities, valuation, movements, purchasing, reservations, consumption, invoice application, core returns, and substitution recommendations remain future responsibilities.
+
+### Service requests
+
+Implemented responsibilities:
+
+- Organization-scoped service intake number and status
+- Required customer, owned vehicle, branch, and organization-offering links
+- Validation that the offering is active and available at the selected branch
+- Quotation or booking intake type derived from the service offering
+- Customer concern, preferred time, and internal notes
+- Safety snapshot copied from the vehicle at intake
+
+Request detail, status transition history, inspection, appointment capacity, estimates, approval, and work-order conversion remain future responsibilities.
 
 ### Future domains
 
 - Identity and access expansion
-- Organization service offerings
-- Customers
-- Vehicles
 - Enquiries and bookings
 - Estimates
 - Work orders/jobs
-- Inventory
 - Procurement
 - Human resources
 - Accounting and payments
@@ -267,18 +310,23 @@ Role names alone should not become authorization logic scattered throughout cont
 - `admin_activity_logs`
 - `service_categories`
 - `service_definitions`
+- `organization_service_offerings`
+- `branch_service_offering`
+- `customers`
+- `vehicles`
+- `vehicle_profiles`
+- `inventory_categories`
+- `inventory_items`
+- `inventory_item_part_numbers`
+- `inventory_item_vehicle_profile`
+- `service_requests`
 - Laravel session, cache, job, and password-reset tables
 
 ### Planned core tables
 
 The final names may change as workflows are modeled.
 
-- `organization_service_offerings`
-- `branch_service_offering`
-- `customers`
 - `customer_addresses`
-- `vehicles`
-- `service_requests`
 - `bookings`
 - `inspections`
 - `estimates`
@@ -289,7 +337,6 @@ The final names may change as workflows are modeled.
 - `work_order_labour`
 - `work_order_parts`
 - `quality_checks`
-- `inventory_items`
 - `branch_stock`
 - `stock_movements`
 - `suppliers`
@@ -314,6 +361,19 @@ The final names may change as workflows are modeled.
 
 ## 10. Target workflows
 
+### Cross-framework operational rules
+
+Vehicle identity and parts taxonomy must be evaluated together whenever scheduling, inspection, estimation, work assignment, or parts selection is implemented:
+
+1. Structural segment must constrain compatible bays, door clearance, and lift capacity.
+2. HEV, PHEV, and BEV profiles must activate high-voltage warnings, EV-specific inspection steps, and server-enforced assignment to EV-certified technicians.
+3. Electronic parking brakes and air suspension must activate the applicable diagnostic retraction or suspension lockout steps before brake work or hoisting.
+4. Vehicle-specific inventory items must be selectable only through an explicit `vehicle_profiles` fitment relation; universal items do not require this relation.
+5. Estimates and invoices must show core charges and disposal fees as separate, auditable amounts and later reconcile refundable core returns.
+6. Part lookup must search primary and alternate/interchange numbers and return compatible substitutes only when their profile fitment is valid.
+
+The current implementation stores these classifications and displays high-voltage warnings. It does not yet claim to enforce bay allocation, technician certification, inspection changes, estimate fees, invoice settlement, or stock substitution because their owning modules have not been built.
+
 ### Organization onboarding
 
 ```text
@@ -327,7 +387,7 @@ Register and verify user
     -> publish organization profile
 ```
 
-The first four steps are implemented. Service selection, pricing, availability, and public publication are not implemented.
+The first six steps are implemented through publication readiness. A public organization profile and public directory are not implemented.
 
 ### Service catalogue and organization offering
 
@@ -339,7 +399,7 @@ System administrator defines category and service
     -> offering becomes discoverable publicly
 ```
 
-Only the platform definition stage is implemented.
+The platform definition, organization opt-in, organization description/pricing, branch availability, duration, lead time, and publication-readiness stages are implemented. Staff/skill scheduling and public discovery are not implemented.
 
 ### Service request to completion
 
@@ -595,9 +655,9 @@ Recommended order:
 2. System administration — initial implementation complete
 3. Organizations, branches, and hours — initial implementation complete
 4. Platform service catalogue — initial implementation complete
-5. Organization service offerings, branch pricing, duration, and availability
-6. Customers and vehicles
-7. Enquiries, quotation requests, bookings, and estimates
+5. Organization service offerings, branch pricing, duration, and availability — initial implementation complete
+6. Customers and vehicles — initial implementation complete
+7. Enquiries, quotation requests, bookings, and estimates — organization intake foundation complete; detail, inspection, and estimates next
 8. Work orders, assignments, status history, labour, and quality checks
 9. Inventory and job-part consumption
 10. Invoicing, payments, expenses, and operational accounting
